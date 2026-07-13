@@ -13,7 +13,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 }) => {
   const { user, token, loading } = useAuth();
 
+  // While AuthContext initializes from localStorage on mount, show a spinner
   if (loading) {
+    console.log("[ProtectedRoute] Auth still loading, showing spinner...");
     return (
       <div className="min-h-screen bg-background-soft flex items-center justify-center">
         <svg
@@ -39,11 +41,25 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     );
   }
 
-  if (!token || !user) {
+  // Primary check: React context state
+  // Fallback check: localStorage (covers the brief window in React 19 where
+  // setState has been called but the re-render hasn't propagated yet)
+  const localToken = localStorage.getItem("token");
+  const localUserRaw = localStorage.getItem("user");
+  const localUser = localUserRaw ? JSON.parse(localUserRaw) : null;
+
+  const effectiveToken = token || localToken;
+  const effectiveUser = user || localUser;
+
+  console.log("[ProtectedRoute] Check — context token:", !!token, "| localStorage token:", !!localToken, "| user:", effectiveUser?.email);
+
+  if (!effectiveToken || !effectiveUser) {
+    console.warn("[ProtectedRoute] No valid session found, redirecting to /login");
     return <Navigate to="/login" replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
+  if (allowedRoles && !allowedRoles.includes(effectiveUser.role)) {
+    console.warn("[ProtectedRoute] Role", effectiveUser.role, "not in allowedRoles:", allowedRoles, "— redirecting to /");
     return <Navigate to="/" replace />;
   }
 

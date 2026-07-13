@@ -21,6 +21,9 @@ export const TenantManagement: React.FC = () => {
   const [emergencyContact, setEmergencyContact] = useState("");
   const [guardianName, setGuardianName] = useState("");
   const [guardianPhone, setGuardianPhone] = useState("");
+  const [roomNumber, setRoomNumber] = useState("");
+  const [bedNumber, setBedNumber] = useState("");
+  const [fee, setFee] = useState("");
 
   const fetchTenants = async () => {
     try {
@@ -50,6 +53,9 @@ export const TenantManagement: React.FC = () => {
         emergency_contact: emergencyContact,
         guardian_name: guardianName,
         guardian_phone: guardianPhone,
+        room_number: roomNumber,
+        bed_number: bedNumber,
+        fee: Number(fee) || 0,
       });
       setIsModalOpen(false);
       setEmail("");
@@ -59,6 +65,9 @@ export const TenantManagement: React.FC = () => {
       setEmergencyContact("");
       setGuardianName("");
       setGuardianPhone("");
+      setRoomNumber("");
+      setBedNumber("");
+      setFee("");
       fetchTenants();
     } catch (err) {
       alert("Failed to register tenant profile.");
@@ -114,7 +123,7 @@ export const TenantManagement: React.FC = () => {
           </Button>
         </Card>
       ) : (
-        <Table headers={["Name", "Contact Details", "Emergency Contact", "Guardian Info", "Status"]}>
+        <Table headers={["Name", "Contact Details", "Emergency Contact", "Guardian Info", "Room / Bed", "Fee", "Status"]}>
           {tenants.map((t) => (
             <tr key={t.id} className="hover:bg-background-soft/50 transition-colors">
               <td className="px-6 py-4 text-sm font-bold text-primary-dark">
@@ -127,6 +136,10 @@ export const TenantManagement: React.FC = () => {
                 {t.guardian_name || "N/A"}
                 {t.guardian_phone && <span className="block text-[10px] text-text-muted">({t.guardian_phone})</span>}
               </td>
+              <td className="px-6 py-4 text-xs text-text-light font-medium">
+                {t.room_number || "N/A"} / {t.bed_number || "N/A"}
+              </td>
+              <td className="px-6 py-4 text-xs text-text-light font-medium">₹{t.fee || 0}</td>
               <td className="px-6 py-4">
                 <span className={`text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full ${
                   t.status === "active" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
@@ -224,6 +237,45 @@ export const TenantManagement: React.FC = () => {
                 value={guardianPhone}
                 onChange={(e) => setGuardianPhone(e.target.value)}
                 placeholder="Phone Number"
+                className="w-full px-4 py-2.5 bg-background-soft border border-primary/10 rounded-xl focus:outline-none focus:border-primary text-text text-sm transition-colors"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-text-light uppercase tracking-wider">Room Number</label>
+              <input
+                type="text"
+                required
+                value={roomNumber}
+                onChange={(e) => setRoomNumber(e.target.value)}
+                placeholder="101"
+                className="w-full px-4 py-2.5 bg-background-soft border border-primary/10 rounded-xl focus:outline-none focus:border-primary text-text text-sm transition-colors"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-text-light uppercase tracking-wider">Bed Number</label>
+              <input
+                type="text"
+                required
+                value={bedNumber}
+                onChange={(e) => setBedNumber(e.target.value)}
+                placeholder="101-A"
+                className="w-full px-4 py-2.5 bg-background-soft border border-primary/10 rounded-xl focus:outline-none focus:border-primary text-text text-sm transition-colors"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-text-light uppercase tracking-wider">Fee</label>
+              <input
+                type="number"
+                required
+                min="0"
+                value={fee}
+                onChange={(e) => setFee(e.target.value)}
+                placeholder="2500"
                 className="w-full px-4 py-2.5 bg-background-soft border border-primary/10 rounded-xl focus:outline-none focus:border-primary text-text text-sm transition-colors"
               />
             </div>

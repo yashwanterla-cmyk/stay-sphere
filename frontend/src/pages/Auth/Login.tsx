@@ -20,18 +20,26 @@ export const Login: React.FC = () => {
     setLoading(true);
 
     try {
+      console.log("[Login] Submitting login for:", email);
       const formPayload = new URLSearchParams();
       formPayload.append("username", email);
       formPayload.append("password", password);
 
-      const response = await api.post("/auth/login", formPayload, {
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      });
+      const response = await api.post(
+        "/auth/login",
+        formPayload.toString(),
+        {
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        }
+      );
+
+      console.log("[Login] Response status:", response.status, "data:", response.data);
 
       const { access_token, role, full_name, user_id } = response.data;
       login(access_token, { id: user_id, email, full_name, role, status: "active" });
       navigate("/");
     } catch (err: any) {
+      console.error("[Login] Error during login:", err);
       setError(err.response?.data?.detail || "Invalid login credentials. Please try again.");
     } finally {
       setLoading(false);

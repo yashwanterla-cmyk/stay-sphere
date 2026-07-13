@@ -1,0 +1,13 @@
+{
+  "name": "stay-sp-dev",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "node scripts/dev.js",
+    "start": "node scripts/dev.js",
+    "proxy": "node scripts/proxy.js"
+  },
+  "dependencies": {
+    "http-proxy": "^1.18.1"
+  }
+}

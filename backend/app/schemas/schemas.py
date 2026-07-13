@@ -94,6 +94,9 @@ class TenantBase(BaseModel):
     emergency_contact: Optional[str] = None
     guardian_name: Optional[str] = None
     guardian_phone: Optional[str] = None
+    room_number: Optional[str] = None
+    bed_number: Optional[str] = None
+    fee: Optional[float] = None
     lease_start: Optional[datetime] = None
     lease_end: Optional[datetime] = None
     status: Optional[str] = "active"
@@ -112,6 +115,21 @@ class TenantRegister(BaseModel):
     emergency_contact: Optional[str] = None
     guardian_name: Optional[str] = None
     guardian_phone: Optional[str] = None
+    room_number: Optional[str] = None
+    bed_number: Optional[str] = None
+    fee: Optional[float] = None
+
+class TenantUpdate(BaseModel):
+    full_name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    phone: Optional[str] = None
+    emergency_contact: Optional[str] = None
+    guardian_name: Optional[str] = None
+    guardian_phone: Optional[str] = None
+    room_number: Optional[str] = None
+    bed_number: Optional[str] = None
+    fee: Optional[float] = None
+    status: Optional[str] = None
 
 class TenantOut(TenantBase):
     id: int

@@ -5,7 +5,7 @@ from datetime import datetime
 
 from app.database.session import get_db
 from app.models.models import Tenant, User, Bed, Room
-from app.schemas.schemas import TenantOut, TenantRegister, TenantCreate
+from app.schemas.schemas import TenantOut, TenantRegister, TenantCreate, TenantUpdate
 from app.auth.security import get_password_hash
 from app.auth.deps import get_current_user, RoleChecker
 
@@ -73,6 +73,9 @@ def register_tenant(
         emergency_contact=tenant_in.emergency_contact,
         guardian_name=tenant_in.guardian_name,
         guardian_phone=tenant_in.guardian_phone,
+        room_number=tenant_in.room_number,
+        bed_number=tenant_in.bed_number,
+        fee=tenant_in.fee,
         status="active",
         lease_start=datetime.utcnow()
     )
@@ -96,11 +99,7 @@ def get_tenant(
 @router.put("/{tenant_id}", response_model=TenantOut)
 def update_tenant(
     tenant_id: int,
-    emergency_contact: Optional[str] = None,
-    guardian_name: Optional[str] = None,
-    guardian_phone: Optional[str] = None,
-    status_field: Optional[str] = None,
-    kyc_document_url: Optional[str] = None,
+    tenant_in: TenantUpdate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -108,16 +107,31 @@ def update_tenant(
     if not tenant:
         raise HTTPException(status_code=404, detail="Tenant profile not found")
 
-    if emergency_contact is not None:
-        tenant.emergency_contact = emergency_contact
-    if guardian_name is not None:
-        tenant.guardian_name = guardian_name
-    if guardian_phone is not None:
-        tenant.guardian_phone = guardian_phone
-    if status_field is not None:
-        tenant.status = status_field
-    if kyc_document_url is not None:
-        tenant.kyc_document_url = kyc_document_url
+    # Update linked User fields
+    user = db.query(User).filter(User.id == tenant.user_id).first()
+    if user:
+        if tenant_in.full_name is not None:
+            user.full_name = tenant_in.full_name
+        if tenant_in.email is not None:
+            user.email = tenant_in.email
+        if tenant_in.phone is not None:
+            user.phone = tenant_in.phone
+
+    # Update Tenant profile fields
+    if tenant_in.emergency_contact is not None:
+        tenant.emergency_contact = tenant_in.emergency_contact
+    if tenant_in.guardian_name is not None:
+        tenant.guardian_name = tenant_in.guardian_name
+    if tenant_in.guardian_phone is not None:
+        tenant.guardian_phone = tenant_in.guardian_phone
+    if tenant_in.room_number is not None:
+        tenant.room_number = tenant_in.room_number
+    if tenant_in.bed_number is not None:
+        tenant.bed_number = tenant_in.bed_number
+    if tenant_in.fee is not None:
+        tenant.fee = tenant_in.fee
+    if tenant_in.status is not None:
+        tenant.status = tenant_in.status
 
     db.commit()
     db.refresh(tenant)

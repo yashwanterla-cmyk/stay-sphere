@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.database.session import engine, Base
+from app.database.session import engine, Base, ensure_tenant_columns
 
 # Import all endpoints
 from app.api.endpoints import (
@@ -11,6 +11,7 @@ from app.api.endpoints import (
 )
 
 # Create tables
+ensure_tenant_columns()
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(

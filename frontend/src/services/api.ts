@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8000/api/v1";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api/v1";
 
 const api = axios.create({
   baseURL: API_URL,
@@ -16,9 +16,11 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    console.log("[API] Request:", config.method, config.url, "headers:", config.headers);
     return config;
   },
   (error) => {
+    console.error("[API] Request error:", error);
     return Promise.reject(error);
   }
 );
@@ -35,6 +37,7 @@ api.interceptors.response.use(
         window.location.href = "/login";
       }
     }
+    console.error("[API] Response error:", error.response?.status, error.response?.data);
     return Promise.reject(error);
   }
 );

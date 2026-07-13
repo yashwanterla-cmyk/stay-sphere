@@ -5,18 +5,52 @@ frontend/build/
 frontend/.vite/
 frontend/.env
 frontend/.env.*
+## Node / frontend
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.vite/
+frontend/.env
+frontend/.env.*
 
-# Python / backend
+## Python / backend
 backend/.venv/
 backend/venv/
-backend/__pycache__/
-backend/**/*.py[cod]
+backend/**/__pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyo
+*_cache/
 backend/.env
 backend/.env.*
+backend/staysphere.db
+*.db
+*.sqlite
+*.sqlite3
 
-# OS / editor
+## Editor / OS files
 .DS_Store
+Thumbs.db
 .vscode/
 .idea/
-__pycache__/
+
+## Logs and runtime files
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+## Build / coverage
+.pytest_cache/
+coverage.xml
+.cache
+
+## Misc
+/.env
+.env.*
+/.venv/
+venv/
+node_modules/
+
+# Optional: ignore package lock if you prefer reproducible installs locally
+# frontend/package-lock.json

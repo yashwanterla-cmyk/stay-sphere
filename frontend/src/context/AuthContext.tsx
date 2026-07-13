@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import api from "../services/api";
+
 
 interface UserProfile {
   id: number;
@@ -28,22 +28,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
+    const storedUserRaw = localStorage.getItem("user");
+    console.log("[AuthContext] Initializing — stored token present:", !!storedToken, "| stored user present:", !!storedUserRaw);
+
+    if (storedToken && storedUserRaw) {
+      try {
+        const storedUser = JSON.parse(storedUserRaw);
+        setToken(storedToken);
+        setUser(storedUser);
+        console.log("[AuthContext] Restored session for:", storedUser.email, "| role:", storedUser.role);
+      } catch (e) {
+        console.error("[AuthContext] Failed to parse stored user, clearing session:", e);
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      }
+    } else {
+      console.log("[AuthContext] No stored session found.");
     }
     setLoading(false);
   }, []);
 
   const login = (jwtToken: string, userProfile: UserProfile) => {
+    console.log("[AuthContext] login() called for:", userProfile.email, "| role:", userProfile.role);
+    // Write to localStorage FIRST (synchronous) so ProtectedRoute can read it
+    // even during the React 19 concurrent render window before state propagates
     localStorage.setItem("token", jwtToken);
     localStorage.setItem("user", JSON.stringify(userProfile));
+    console.log("[AuthContext] localStorage updated. Now updating React state...");
     setToken(jwtToken);
     setUser(userProfile);
+    console.log("[AuthContext] React state updated. Login complete.");
   };
 
   const logout = () => {
+    console.log("[AuthContext] logout() called — clearing session.");
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setToken(null);
@@ -55,6 +73,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const updated = { ...user, ...profile };
       localStorage.setItem("user", JSON.stringify(updated));
       setUser(updated);
+      console.log("[AuthContext] updateUser() — profile updated for:", updated.email);
     }
   };
 

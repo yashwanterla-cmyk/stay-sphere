@@ -79,6 +79,9 @@ class Tenant(Base):
     emergency_contact = Column(String, nullable=True)
     guardian_name = Column(String, nullable=True)
     guardian_phone = Column(String, nullable=True)
+    room_number = Column(String, nullable=True)
+    bed_number = Column(String, nullable=True)
+    fee = Column(Float, nullable=True)
     lease_start = Column(DateTime, nullable=True)
     lease_end = Column(DateTime, nullable=True)
 
